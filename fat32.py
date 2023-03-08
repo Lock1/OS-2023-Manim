@@ -8,9 +8,11 @@ from manim import *
 class FAT32(Scene):
     def construct(self):
         # FileAllocationTable
+        fat_grid_index = []
         fat_grid = [Rectangle(width=2, height=1).add_background_rectangle() for _ in range(24)]
         for i in range(24):
-            fat_grid[i].add(Text(f"{i:#0{4}x}").scale(0.4).shift(RIGHT*0.6 + DOWN*0.3))
+            fat_grid_index.append(Text(f"{i:#0{4}x}").scale(0.3).shift(RIGHT*0.68 + DOWN*0.35))
+            fat_grid[i].add(fat_grid_index[i])
         fat_grid_vgroup = VGroup(*fat_grid)
         fat_grid_vgroup.arrange_in_grid(buff=(0, 0), rows=6, cols=4)
         fat_grid_label = Tex("FileAllocationTable - Logical View")
@@ -94,8 +96,67 @@ class FAT32(Scene):
         self.play(*[FadeIn(label) for label in files_label])
         self.wait(2)
 
-        # arrow_reserved_1 = Arrow(start=fat_grid[0].get_center(), end=fat_grid[16].get_center(), color=GOLD)
-        # self.play(Create(arrow_reserved_1))
+        # Animation - SB #5 - File arrow
+        file_arrow_style = {
+            "color"        : YELLOW,
+            "stroke_width" : 3,
+            "tip_length"   : 0.2,
+        }
+        file_arrows_1 = [
+            Arrow(start=fat_grid[3].get_center(), end=fat_grid[6].get_center(), **file_arrow_style).scale(0.6),
+            Arrow(start=fat_grid[6].get_center(), end=fat_grid[11].get_center(), **file_arrow_style).scale(0.6),
+        ]
+        self.play(*[Create(arrow) for arrow in file_arrows_1])
+        self.wait(1)
+
+        # Second file arrow
+        file_arrows_2 = [
+            Arrow(start=fat_grid[9].get_center(), end=fat_grid[12].get_center(), **file_arrow_style).scale(0.6),
+            Arrow(start=fat_grid[12].get_center(), end=fat_grid[13].get_center(), color=YELLOW, 
+                  stroke_width=6, tip_length=0.7).scale(0.25, scale_tips=True),
+        ]
+        self.play(*[Create(arrow) for arrow in file_arrows_2])
+        self.wait(2)
+
+        # Animation - Remove arrows
+        self.play(*[FadeOut(arrow) for arrow in file_arrows_1 + file_arrows_2])
+        self.wait(1)
+
+        # Animation - SB #4 - Peek physical, kano
+        # .add_background_rectangle(opacity=0.5,buff=0.1)
+        physical_file_label = [
+            Text("0x0000 0006").move_to(files_label[0]).scale(0.4),
+            Text("0x0000 000b").move_to(files_label[1]).scale(0.4),
+            Text("End of File").move_to(files_label[3]).scale(0.4),
+        ]
+        self.play(Transform(files_label[0], physical_file_label[0]))
+        self.play(Create(file_arrows_1[0]))
+        self.wait(1)
+        outline_box1 = SurroundingRectangle(physical_file_label[0], color=YELLOW, buff=SMALL_BUFF)
+        outline_box2 = SurroundingRectangle(fat_grid_index[6], color=YELLOW, buff=SMALL_BUFF)
+        self.play(Create(outline_box1), Create(outline_box2))
+        self.wait(2)
+
+        self.play(Uncreate(outline_box1), Uncreate(outline_box2))
+        self.wait(1)
+
+        self.play(Transform(files_label[1], physical_file_label[1]))
+        self.play(Create(file_arrows_1[1]))
+        self.wait(1)
+        outline_box1 = SurroundingRectangle(physical_file_label[1], color=YELLOW, buff=SMALL_BUFF)
+        outline_box2 = SurroundingRectangle(fat_grid_index[0xB], color=YELLOW, buff=SMALL_BUFF)
+        self.play(Create(outline_box1), Create(outline_box2))
+        self.wait(2)
+
+        self.play(Uncreate(outline_box1), Uncreate(outline_box2))
+        self.wait(1)
+
+        self.play(Transform(files_label[3], physical_file_label[2]))
+        self.wait(1)
+
+        temp_label = Text("0x0FFF FFFF").move_to(files_label[3]).scale(0.4)
+        self.play(Transform(files_label[3], temp_label))
+        # Just realize transform also change the text object, whatever
 
         self.wait(5)
 
