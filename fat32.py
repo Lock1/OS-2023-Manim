@@ -1,5 +1,10 @@
 from manim import *
 
+# Warning: Most of the time in this manim file, im too lazy for writing proper py code for it
+#     i just {hotkey duplicate} all the time in vscode, i prefer focus on iterating animation faster
+#     so yes, these code is hot garbage
+
+
 class FAT32(Scene):
     def construct(self):
         # FileAllocationTable
@@ -26,7 +31,7 @@ class FAT32(Scene):
         fat_legend_vgroup.arrange_in_grid(buff=(0, 0.3), rows=3, cols=1)
         fat_legend_vgroup.to_corner(RIGHT).shift(LEFT*1)
 
-        # Animation - Initial & reserved clusters
+        # Animation - SB #1 - Initial Animation & Reserved clusters
         self.play(FadeIn(fat_grid_vgroup, shift=UP))
         self.play(
             *[fat_grid[i].background_rectangle.animate.set_fill(RED, opacity=0.4) for i in range(2)],
@@ -34,7 +39,7 @@ class FAT32(Scene):
         )
         self.wait(2)
 
-        # Animation - Reserved clusters value
+        # Animation - SB #2 - Reserved clusters value
         fat_cl0_label = Text("CLUSTER_0_VALUE").scale(0.25).move_to(fat_grid[0])
         fat_cl1_label = Text("CLUSTER_1_VALUE").scale(0.25).move_to(fat_grid[1])
         fat_grid[0].add(fat_cl0_label)
@@ -42,7 +47,7 @@ class FAT32(Scene):
         self.play(FadeIn(fat_cl0_label), FadeIn(fat_cl1_label))
         self.wait(2)
 
-        # Animation - Folders
+        # Animation - SB #2 - Folder clusters
         self.play(
             fat_grid[2].background_rectangle.animate.set_fill(BLUE, opacity=0.4),
             fat_grid[4].background_rectangle.animate.set_fill(BLUE, opacity=0.4),
@@ -52,7 +57,7 @@ class FAT32(Scene):
         )
         self.wait(2)
 
-        # Animation - Folder label
+        # Animation - SB #2 - Folder label
         root_label = Text("root").scale(0.5).move_to(fat_grid[2])
         fat_grid[2].add(root_label)
         folder1_label = Text("folder1").scale(0.5).move_to(fat_grid[4])
@@ -65,6 +70,28 @@ class FAT32(Scene):
             FadeIn(root_label), FadeIn(folder1_label),
             FadeIn(folder2_label), FadeIn(nested1_label),
         )
+        self.wait(2)
+
+        # Animation - SB #2 - File clusters
+        files_grid = [
+            (3, "kano-0"),
+            (6, "kano-1"),
+            (9, "daijoubu-0"),
+            (11, "kano-2"),
+            (12, "daijoubu-1"),
+            (13, "daijoubu-2"),
+            (18, "frag-0"),
+            (21, "nbuna-0"),
+        ]
+        self.play(
+            *[fat_grid[i].background_rectangle.animate.set_fill(GREEN, opacity=0.4) for i, _ in files_grid], 
+            FadeIn(fat_legend[2], shift=UP),
+        )
+        self.wait(2)
+
+        # Animation - SB #2 - File names
+        files_label = [Text(fname).scale(0.5).move_to(fat_grid[i]) for i, fname in files_grid]
+        self.play(*[FadeIn(label) for label in files_label])
         self.wait(2)
 
         # arrow_reserved_1 = Arrow(start=fat_grid[0].get_center(), end=fat_grid[16].get_center(), color=GOLD)
