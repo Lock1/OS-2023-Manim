@@ -8,7 +8,7 @@ class FAT32(Scene):
             fat_grid[i].add(Text(f"{i:#0{4}x}").scale(0.4).shift(RIGHT*0.6 + DOWN*0.3))
         fat_grid_vgroup = VGroup(*fat_grid)
         fat_grid_vgroup.arrange_in_grid(buff=(0, 0), rows=6, cols=4)
-        fat_grid_label = Tex("FileAllocationTable")
+        fat_grid_label = Tex("FileAllocationTable - Logical View")
         self.add(fat_grid_label)
         fat_filetable = VGroup(fat_grid_label, fat_grid_vgroup).arrange(DOWN)
         fat_filetable.to_corner(UP + LEFT)
@@ -31,8 +31,13 @@ class FAT32(Scene):
         self.play(*[fat_grid[i].background_rectangle.animate.set_fill(RED, opacity=0.4) for i in range(2)])
         self.play(FadeIn(fat_legend[0], shift=UP))
 
+        fat_cl0_label = Text("CLUSTER_0_VALUE").scale(0.25).move_to(fat_grid[0])
+        fat_cl1_label = Text("CLUSTER_1_VALUE").scale(0.25).move_to(fat_grid[1])
+        fat_grid[0].add(fat_cl0_label)
+        fat_grid[1].add(fat_cl1_label)
+        self.play(FadeIn(fat_cl0_label), FadeIn(fat_cl1_label))
 
-        # arrow_reserved_1 = Arrow(start=fat_grid[0], end=fat_grid[16], color=GOLD)
+        # arrow_reserved_1 = Arrow(start=fat_grid[0].get_center(), end=fat_grid[16].get_center(), color=GOLD)
         # self.play(Create(arrow_reserved_1))
 
         self.wait(5)
