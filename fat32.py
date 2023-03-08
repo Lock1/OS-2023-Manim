@@ -28,14 +28,44 @@ class FAT32(Scene):
 
         # Animation - Initial & reserved clusters
         self.play(FadeIn(fat_grid_vgroup, shift=UP))
-        self.play(*[fat_grid[i].background_rectangle.animate.set_fill(RED, opacity=0.4) for i in range(2)])
-        self.play(FadeIn(fat_legend[0], shift=UP))
+        self.play(
+            *[fat_grid[i].background_rectangle.animate.set_fill(RED, opacity=0.4) for i in range(2)],
+            FadeIn(fat_legend[0], shift=UP),
+        )
+        self.wait(2)
 
+        # Animation - Reserved clusters value
         fat_cl0_label = Text("CLUSTER_0_VALUE").scale(0.25).move_to(fat_grid[0])
         fat_cl1_label = Text("CLUSTER_1_VALUE").scale(0.25).move_to(fat_grid[1])
         fat_grid[0].add(fat_cl0_label)
         fat_grid[1].add(fat_cl1_label)
         self.play(FadeIn(fat_cl0_label), FadeIn(fat_cl1_label))
+        self.wait(2)
+
+        # Animation - Folders
+        self.play(
+            fat_grid[2].background_rectangle.animate.set_fill(BLUE, opacity=0.4),
+            fat_grid[4].background_rectangle.animate.set_fill(BLUE, opacity=0.4),
+            fat_grid[8].background_rectangle.animate.set_fill(BLUE, opacity=0.4),
+            fat_grid[10].background_rectangle.animate.set_fill(BLUE, opacity=0.4),
+            FadeIn(fat_legend[1], shift=UP),
+        )
+        self.wait(2)
+
+        # Animation - Folder label
+        root_label = Text("root").scale(0.5).move_to(fat_grid[2])
+        fat_grid[2].add(root_label)
+        folder1_label = Text("folder1").scale(0.5).move_to(fat_grid[4])
+        fat_grid[4].add(folder1_label)
+        folder2_label = Text("folder2").scale(0.5).move_to(fat_grid[8])
+        fat_grid[8].add(folder2_label)
+        nested1_label = Text("nestedf1").scale(0.5).move_to(fat_grid[10])
+        fat_grid[10].add(nested1_label)
+        self.play(
+            FadeIn(root_label), FadeIn(folder1_label),
+            FadeIn(folder2_label), FadeIn(nested1_label),
+        )
+        self.wait(2)
 
         # arrow_reserved_1 = Arrow(start=fat_grid[0].get_center(), end=fat_grid[16].get_center(), color=GOLD)
         # self.play(Create(arrow_reserved_1))
