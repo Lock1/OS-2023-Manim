@@ -11,7 +11,7 @@ class FAT32(Scene):
         fat_grid_index = []
         fat_grid = [Rectangle(width=2, height=1).add_background_rectangle() for _ in range(24)]
         for i in range(24):
-            fat_grid_index.append(Tex(f"{i:#0{4}x}").scale(0.3).shift(RIGHT*0.68 + DOWN*0.35))
+            fat_grid_index.append(Tex(f"{i:#0{4}x}").scale(0.4).shift(RIGHT*0.72 + DOWN*0.35))
             fat_grid[i].add(fat_grid_index[i])
         fat_grid_vgroup = VGroup(*fat_grid)
         fat_grid_vgroup.arrange_in_grid(buff=(0, 0), rows=6, cols=4)
@@ -163,7 +163,7 @@ class FAT32(Scene):
         self.play(Transform(files_label[3], physical_file_label[2]))
         self.wait(1)
 
-        temp_label = Tex("0x0FFF FFFF").move_to(files_label[3]).scale(0.6)
+        temp_label = Tex("0x0FFF FFFF").move_to(files_label[3]).scale(0.5)
         self.play(Transform(files_label[3], temp_label))
         self.wait(2)
         # Just realize transform also change the text object, whatever
@@ -256,6 +256,8 @@ class FAT32(Scene):
             Transform(fat_cl0_label, Tex("0FFF FFF0").move_to(fat_cl0_label).scale(0.6)),
             Transform(fat_cl1_label, Tex("0FFF FFFF").move_to(fat_cl1_label).scale(0.6)),
         )
+        # FIXME : Theres some problem with above transformation
+
         self.wait(2)
         self.play(
             Transform(files_label[0], Tex("0000 0006").move_to(files_label[0]).scale(0.6)),
@@ -268,7 +270,9 @@ class FAT32(Scene):
             Transform(files_label[7], Tex("End of File").move_to(files_label[7]).scale(0.6)),
         )
 
-
+        # TODO : Swap EOF with actual number value
+        # TODO : Folder physical view
+        # TODO : Extra, showing how to read file
 
         self.wait(5)
 
