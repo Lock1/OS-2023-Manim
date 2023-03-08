@@ -2,7 +2,7 @@ from manim import *
 
 class FAT32(Scene):
     def construct(self):
-        fat_grid = [Rectangle(width=2, height=1) for _ in range(24)]
+        fat_grid = [Rectangle(width=2, height=1).add_background_rectangle() for _ in range(24)]
         for i in range(24):
             fat_grid[i].add(Text(f"{i:#0{4}x}").scale(0.4).shift(RIGHT*0.6 + DOWN*0.3))
         fat_grid_vgroup = VGroup(*fat_grid)
@@ -15,7 +15,7 @@ class FAT32(Scene):
 
         # Initial & reserved clusters
         self.play(FadeIn(fat_grid_vgroup, shift=UP))
-        self.play(*[fat_grid[i].animate.set_fill(RED, opacity=0.4) for i in range(2)])
+        self.play(*[fat_grid[i].background_rectangle.animate.set_fill(RED, opacity=0.4) for i in range(2)])
 
         self.wait(5)
 
