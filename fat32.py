@@ -156,7 +156,63 @@ class FAT32(Scene):
 
         temp_label = Text("0x0FFF FFFF").move_to(files_label[3]).scale(0.4)
         self.play(Transform(files_label[3], temp_label))
+        self.wait(2)
         # Just realize transform also change the text object, whatever
+
+        # Animation - Revert all physical peek
+        temp_label = [
+            Text("kano-0").move_to(files_label[0]).scale(0.5),
+            Text("kano-1").move_to(files_label[1]).scale(0.5),
+            Text("kano-2").move_to(files_label[3]).scale(0.5),
+        ]
+        self.play(
+            Transform(files_label[0], temp_label[0]),
+            Transform(files_label[1], temp_label[1]),
+            Transform(files_label[3], temp_label[2]),
+            FadeOut(file_arrows_1[0]),
+            FadeOut(file_arrows_1[1]),
+        )
+        self.wait(3)
+
+
+        # Animation - SB #8 - Directory arrow & DirectoryTable
+        folder_arrow_style = {
+            "color"        : RED,
+            "stroke_width" : 3,
+            "tip_length"   : 0.2,
+        }
+        root_arrows = [
+            Arrow(start=fat_grid[4].get_center(), end=fat_grid[2].get_center(), **folder_arrow_style).scale(0.9),
+            Arrow(start=fat_grid[8].get_center(), end=fat_grid[2].get_center(), **folder_arrow_style).scale(0.9),
+            Arrow(start=fat_grid[0x15].get_center(), end=fat_grid[2].get_center(), **folder_arrow_style),
+            Arrow(start=fat_grid[3].get_center(), end=fat_grid[2].get_center(), **folder_arrow_style).scale(0.6),
+        ]
+        self.play(*[Create(arrow) for arrow in root_arrows])
+        self.wait(1)
+
+        # Animation - SB #8 - Actual directory table
+        root_dirtable = [
+            ["0x2", "root", "special"],
+            ["0x4", "folder1", "subdir"],
+            ["0x8", "folder2", "subdir"],
+            ["0x3", "kano", "file"],
+            ["0x15", "nbuna", "file"],
+        ]
+        root_label = [Text(text) for text in ["Cluster", "Name", "Attribute"]]
+        root_table = Table(
+            root_dirtable, 
+            col_labels=root_label,
+            include_outer_lines=True
+        ).scale(0.4).set_row_colors(BLACK)
+        root_table.add_to_back(root_table.get_highlighted_cell((1, 1), color=GOLD_A))
+        root_table.add_to_back(root_table.get_highlighted_cell((1, 2), color=GOLD_A))
+        root_table.add_to_back(root_table.get_highlighted_cell((1, 3), color=GOLD_A))
+
+        root_dir_label = Tex("DirectoryTable - Root (cluster 0x02)").scale(0.7)
+        root_scene_table = VGroup(root_dir_label, root_table).arrange(DOWN)
+        root_scene_table.move_to(fat_legend[0])
+
+        self.play(*[FadeOut(mobj, shift=UP) for mobj in fat_legend], FadeIn(root_scene_table, shift=UP))
 
         self.wait(5)
 
