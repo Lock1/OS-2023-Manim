@@ -33,6 +33,7 @@ class FAT32(Scene):
         fat_legend_vgroup.arrange_in_grid(buff=(0, 0.3), rows=3, cols=1)
         fat_legend_vgroup.to_corner(RIGHT).shift(LEFT*1)
 
+
         # Animation - SB #1 - Initial Animation & Reserved clusters
         self.play(FadeIn(fat_grid_vgroup, shift=UP))
         self.play(
@@ -41,6 +42,7 @@ class FAT32(Scene):
         )
         self.wait(2)
 
+
         # Animation - SB #2 - Reserved clusters value
         fat_cl0_label = Text("CLUSTER_0_VALUE").scale(0.25).move_to(fat_grid[0])
         fat_cl1_label = Text("CLUSTER_1_VALUE").scale(0.25).move_to(fat_grid[1])
@@ -48,6 +50,7 @@ class FAT32(Scene):
         fat_grid[1].add(fat_cl1_label)
         self.play(FadeIn(fat_cl0_label), FadeIn(fat_cl1_label))
         self.wait(2)
+
 
         # Animation - SB #2 - Folder clusters
         self.play(
@@ -58,6 +61,7 @@ class FAT32(Scene):
             FadeIn(fat_legend[1], shift=UP),
         )
         self.wait(2)
+
 
         # Animation - SB #2 - Folder label
         root_label = Text("root").scale(0.5).move_to(fat_grid[2])
@@ -73,6 +77,7 @@ class FAT32(Scene):
             FadeIn(folder2_label), FadeIn(nested1_label),
         )
         self.wait(2)
+
 
         # Animation - SB #2 - File clusters
         files_grid = [
@@ -91,10 +96,12 @@ class FAT32(Scene):
         )
         self.wait(2)
 
+
         # Animation - SB #2 - File names
         files_label = [Text(fname).scale(0.5).move_to(fat_grid[i]) for i, fname in files_grid]
         self.play(*[FadeIn(label) for label in files_label])
         self.wait(2)
+
 
         # Animation - SB #5 - File arrow
         file_arrow_style = {
@@ -118,9 +125,11 @@ class FAT32(Scene):
         self.play(*[Create(arrow) for arrow in file_arrows_2])
         self.wait(2)
 
+
         # Animation - Remove arrows
         self.play(*[FadeOut(arrow) for arrow in file_arrows_1 + file_arrows_2])
         self.wait(1)
+
 
         # Animation - SB #4 - Peek physical, kano
         # .add_background_rectangle(opacity=0.5,buff=0.1)
@@ -159,6 +168,7 @@ class FAT32(Scene):
         self.wait(2)
         # Just realize transform also change the text object, whatever
 
+
         # Animation - Revert all physical peek
         temp_label = [
             Text("kano-0").move_to(files_label[0]).scale(0.5),
@@ -190,6 +200,7 @@ class FAT32(Scene):
         self.play(*[Create(arrow) for arrow in root_arrows])
         self.wait(1)
 
+
         # Animation - SB #8 - Actual directory table
         root_dirtable = [
             ["0x2", "root", "special"],
@@ -213,6 +224,29 @@ class FAT32(Scene):
         root_scene_table.move_to(fat_legend[0])
 
         self.play(*[FadeOut(mobj, shift=UP) for mobj in fat_legend], FadeIn(root_scene_table, shift=UP))
+        self.wait(2)
+
+
+        # Animation - Destroy all red arrows
+        self.play(*[FadeOut(arrow) for arrow in root_arrows])
+
+
+        # Animation - Point directory table to clusters FAT
+        root_arrows = [
+            Arrow(start=root_table.get_cell((3, 1)).get_center(), end=fat_grid[4].get_center(), **folder_arrow_style).scale(0.9),
+            Arrow(start=root_table.get_cell((4, 1)).get_center(), end=fat_grid[8].get_center(), **folder_arrow_style).scale(0.9),
+            Arrow(start=root_table.get_cell((5, 1)).get_center(), end=fat_grid[3].get_center(), **folder_arrow_style).scale(0.9),
+            Arrow(start=root_table.get_cell((6, 1)).get_center(), end=fat_grid[0x15].get_center(), **folder_arrow_style).scale(0.9),
+        ]
+        self.play(*[Create(arrow) for arrow in root_arrows])
+        self.wait(3)
+
+        # Animation - Destroy all dir table red arrows
+        self.play(*[FadeOut(arrow) for arrow in root_arrows])
+        self.wait(2)
+
+        # Animation - Revert back to legend
+        self.play(*[FadeIn(legend, shift=UP) for legend in fat_legend], FadeOut(root_scene_table, shift=UP))
 
         self.wait(5)
 
