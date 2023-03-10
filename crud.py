@@ -1,3 +1,4 @@
+from ctypes import alignment
 from manim import *
 
 # Warning: Most of the time in this manim file, im too lazy for writing proper py code for it
@@ -16,25 +17,12 @@ class FAT32(Scene):
         fat_grid_vgroup = VGroup(*fat_grid)
         fat_grid_vgroup.arrange_in_grid(buff=(0, 0), rows=6, cols=4)
         fat_grid_label = Tex("FileAllocationTable - Logical View")
-        self.add(fat_grid_label)
         fat_filetable = VGroup(fat_grid_label, fat_grid_vgroup).arrange(DOWN)
         fat_filetable.to_corner(UP + LEFT)
         fat_grid_label.to_corner(LEFT)
 
-        # Legend
-        fat_legend = [Rectangle(BLACK, width=3, height=1).add_background_rectangle() for _ in range(3)]
-        fat_legend[0].add(Text("Reserved").scale(0.6))
-        fat_legend[1].add(Text("Folder").scale(0.6))
-        fat_legend[2].add(Text("File").scale(0.6))
-        fat_legend[0].background_rectangle.set_fill(RED, opacity=0.4)
-        fat_legend[1].background_rectangle.set_fill(BLUE, opacity=0.4)
-        fat_legend[2].background_rectangle.set_fill(GREEN, opacity=0.4)
-        fat_legend_vgroup = VGroup(*fat_legend)
-        fat_legend_vgroup.arrange_in_grid(buff=(0, 0.3), rows=3, cols=1)
-        fat_legend_vgroup.to_corner(RIGHT).shift(LEFT*1)
-
-
         # Animation - Set base scene, continuing previous FAT32
+        self.add(fat_grid_label)
         # Reserved
         fat_grid[0].background_rectangle.set_fill(RED, opacity=0.4)
         fat_grid[1].background_rectangle.set_fill(RED, opacity=0.4)
@@ -74,11 +62,29 @@ class FAT32(Scene):
             fat_grid[fatidx].add(files_label[i])
 
         self.add(fat_grid_vgroup, *fat_grid)
+        
+        # Animation - Read request
+        request_label = Tex("Read")
+        request_label.to_corner(RIGHT + UP).shift(LEFT*2)
+        
+        driver_request = [
+            ["buf: <Pointer>"],
+            ["name: kano"],
+            ["ext: <None>"],
+            ["parent_cluster_number: 0x02"],
+            ["buffer_size: 10000"],
+        ]
+        request_table = Table(driver_request, include_outer_lines=True, arrange_in_grid_config={"cell_alignment": LEFT}).scale(0.4)
+        request_table.move_to(request_label)
+        request_table.shift(DOWN*2)
+        self.play(FadeIn(request_label, shift=UP), FadeIn(request_table, shift=UP))
+
+        
 
 
-        # # Animation - Last wait
+        # Animation - Last wait
         self.wait(5)
 
-        # # Animation - Destroy everything
+        # Animation - Destroy everything
         self.play(*[FadeOut(obj) for obj in self.mobjects])
 
