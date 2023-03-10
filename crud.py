@@ -59,9 +59,8 @@ class FAT32(Scene):
         files_label = [Text(fname).scale(0.5).move_to(fat_grid[i]) for i, fname in files_grid]
         for i, (fatidx, _) in enumerate(files_grid):
             fat_grid[fatidx].background_rectangle.set_fill(GREEN, opacity=0.4)
-            fat_grid[fatidx].add(files_label[i])
 
-        self.add(fat_grid_vgroup, *fat_grid)
+        self.add(fat_grid_vgroup, *fat_grid, *files_label)
         
         # Animation - Read request
         request_label = Tex("Read")
@@ -199,7 +198,7 @@ class FAT32(Scene):
         read_text.background_rectangle.set_fill(BLACK, opacity=1.0)
         read_text.move_to(first_cl_arrow.get_center())
 
-        file_arrow_style = {
+        buf_arrow_style = {
             "color"        : ORANGE,
             "stroke_width" : 3,
             "tip_length"   : 0.2,
@@ -207,11 +206,26 @@ class FAT32(Scene):
         buf_arrow = Arrow(
             start=request_table.get_cell((1, 1)).get_center() + LEFT*2,
             end=read_text.get_center() + LEFT*0.8,
-            **file_arrow_style,
+            **buf_arrow_style,
         )
         self.play(FadeIn(read_text))
         self.wait(1)
         self.play(Create(buf_arrow))
+        self.wait(2)
+
+        # Animation - Reading next pointer
+        self.play(FadeOut(buf_arrow))
+        self.wait(1)
+        self.play(Transform(files_label[0], Tex("0000 0006").scale(0.5).move_to(files_label[0])))
+        self.play(FadeOut(read_text), FadeOut(first_cl_arrow))
+        self.wait(1)
+        cl_arrow = Arrow(
+            start=fat_grid[3].get_center(),
+            end=fat_grid[6].get_center(),
+            **file_arrow_style,
+        )
+        self.play(Create(cl_arrow))
+
 
         # Animation - Last wait
         self.wait(5)

@@ -250,6 +250,8 @@ class FAT32(Scene):
         self.wait(1)
 
         # FIXME : Theres some, wacky transition for transforms for SB "Physical View"
+        # Its seems Transform() between Tex and Text is bit buggy
+        # Oh nvm, it seems Transform() direct reference does not trigger all parent.add() instantly
         # Animation - Physical view
         self.play(Transform(fat_grid_label, Tex("FileAllocationTable - Physical View").move_to(fat_grid_label)))
         self.wait(1)
