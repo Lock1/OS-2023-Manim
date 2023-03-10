@@ -61,7 +61,16 @@ class CRUD(Scene):
 
         self.add(fat_grid_vgroup, *fat_grid, *files_label)
         
-        # Animation - Read request
+
+
+
+
+
+
+
+
+
+        # --- Animation - Read ---
         request_label = Tex("Read")
         request_label.to_corner(RIGHT + UP).shift(LEFT*2)
         
@@ -112,7 +121,7 @@ class CRUD(Scene):
         root_scene_table = VGroup(root_dir_label, root_table).arrange(DOWN, buff=SMALL_BUFF)
         root_scene_table.move_to(request_table).shift(DOWN*3.25)
 
-        # Arrow first
+        # Draw Arrow first
         parent_dirtable_arrow = Arrow(
             start=fat_grid[2].get_center(),
             end=root_table.get_cell((1, 1)).get_center(), **folder_arrow_style
@@ -267,12 +276,80 @@ class CRUD(Scene):
 
         # Animation - Remove right side
         self.play(
+            Transform(files_label[0], Text("kano-0").scale(0.5).move_to(files_label[0])),
+            Transform(files_label[1], Text("kano-1").scale(0.5).move_to(files_label[1])),
+            Transform(files_label[3], Text("kano-2").scale(0.5).move_to(files_label[3])),
+        )
+        self.play(
             FadeOut(arrow_request),
             FadeOut(request_label, shift=UP),
             FadeOut(checkmark, shift=UP),
             FadeOut(request_table, shift=UP),
             FadeOut(root_scene_table, shift=UP),
         )
+
+
+
+
+
+
+
+
+
+        #  --- Animation - Write ---
+        request_label = Tex("Write")
+        request_label.to_corner(RIGHT + UP).shift(LEFT*2)
+        
+        driver_request = [
+            ["buf: <Pointer>"],
+            ["name: uwu"],
+            ["ext: <None>"],
+            ["parent_cluster_number: 0x0A"],
+            ["buffer_size: 214"],
+        ]
+        request_table = Table(driver_request, include_outer_lines=True, arrange_in_grid_config={"cell_alignment": LEFT}).scale(0.4)
+        request_table.move_to(request_label)
+        request_table.shift(DOWN*1.9)
+        self.play(FadeIn(request_label, shift=UP), FadeIn(request_table, shift=UP))
+        self.wait(2)
+
+        # Animation - Draw arrow to parent folder
+        parent_cl_arrow = Arrow(
+            start=request_table.get_cell((4, 1)).get_center() + LEFT*1.3, 
+            end=fat_grid[0xA].get_center(), **folder_arrow_style
+        ).scale(0.8)
+        self.play(Create(parent_cl_arrow))
+        self.wait(1)
+
+        # Animation - Show nestedf1 folder
+        nestedf1_dirtable = [
+            ["0x4", "nestedf1", "0"],
+            ["0x9", "daijoubu", "135"],
+        ]
+        nestedf1_table_label = [Text(text) for text in ["Cluster", "Name", "Filesize"]]
+        nestedf1_table = Table(
+            nestedf1_dirtable, 
+            col_labels=nestedf1_table_label,
+            include_outer_lines=True
+        ).scale(0.34).set_row_colors(BLACK)
+        nestedf1_table.add_to_back(nestedf1_table.get_highlighted_cell((1, 1), color=GOLD_A))
+        nestedf1_table.add_to_back(nestedf1_table.get_highlighted_cell((1, 2), color=GOLD_A))
+        nestedf1_table.add_to_back(nestedf1_table.get_highlighted_cell((1, 3), color=GOLD_A))
+
+        nestedf1_dir_label   = Tex("DirectoryTable - nestedf1 (cluster 0x0A)").scale(0.5)
+        nestedf1_scene_table = VGroup(nestedf1_dir_label, nestedf1_table).arrange(DOWN, buff=SMALL_BUFF)
+        nestedf1_scene_table.move_to(request_table).shift(DOWN*3.25)
+
+        # Draw Arrow first
+        parent_dirtable_arrow = Arrow(
+            start=fat_grid[0xA].get_center(),
+            end=root_table.get_cell((1, 1)).get_center(), **folder_arrow_style
+        ).scale(0.6)
+        self.play(Create(parent_dirtable_arrow))
+        self.wait(1)
+
+        self.play(FadeIn(nestedf1_scene_table, shift=UP))
+        self.wait(2)
 
 
 
