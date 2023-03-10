@@ -359,7 +359,19 @@ class CRUD(Scene):
         self.play(FadeOut(parent_dirtable_arrow), FadeOut(parent_cl_arrow))
         self.wait(2)
 
+        new_entry = [
+            Rectangle(WHITE, height=1.35, width=3.45),
+            Rectangle(WHITE, height=1.35, width=3.93),
+            Rectangle(WHITE, height=1.35, width=3.45),
+        ]
 
+        new_entry_vgroup = VGroup(*new_entry)
+        new_entry_vgroup.arrange_in_grid(cols=3, buff=0)
+        new_entry_vgroup.move_to(nestedf1_scene_table.get_center() + DOWN*1.1)
+
+        new_entry_vgroup.scale(0.34)
+        new_entry_label = [Text(txt).move_to(new_entry[i]) for i, txt in enumerate(["?", "uwu", "9000"])]
+        self.play(FadeIn(new_entry_vgroup, shift=LEFT), *[FadeIn(label.scale(0.34), shift=LEFT) for label in new_entry_label])
 
 
         # Animation - Last wait
