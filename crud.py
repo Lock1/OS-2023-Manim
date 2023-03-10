@@ -391,9 +391,9 @@ class CRUD(Scene):
             self.wait(1)
 
         # Animation - Write & placeholder
-        placeholder = Tex("?").scale(0.6)
-        placeholder.move_to(fat_grid[5].get_center())
-        self.play(Write(placeholder))
+        placeholder_1 = Tex("?").scale(0.6)
+        placeholder_1.move_to(fat_grid[5].get_center())
+        self.play(Write(placeholder_1))
         self.wait(2)
         self.play(Transform(new_entry_label[0], Text("0x5").move_to(new_entry[0]).scale(0.34)))
         self.wait(2)
@@ -414,7 +414,7 @@ class CRUD(Scene):
         self.play(iterator_arrow.animate.put_start_and_end_on(origin_arrow, fat_grid[7].get_center() + LEFT*0.2))
         self.wait(1)
 
-        self.play(Transform(placeholder, Tex("0000 0007").move_to(fat_grid[5]).scale(0.6)))
+        self.play(Transform(placeholder_1, Tex("0000 0007").move_to(fat_grid[5]).scale(0.6)))
         self.wait(1)
         placeholder_2 = Text("?").move_to(fat_grid[7]).scale(0.6)
         self.play(Write(placeholder_2))
@@ -487,7 +487,7 @@ class CRUD(Scene):
         # Animation - Pointing into buffer_size
         self.play(FadeOut(write_text))
         origin_arrow = fat_grid[0x10].get_center()
-        self.play(iterator_arrow.animate.put_start_and_end_on(origin_arrow, request_table.get_cell((5, 1)).get_center() + LEFT*1.3))
+        self.play(iterator_arrow.animate.put_start_and_end_on(origin_arrow, request_table.get_cell((5, 1)).get_center() + LEFT*2.5))
         self.wait(1)
 
         write_text = Text("5*CLUSTER_SIZE = 10240 ≥ 9000").scale(0.3)
@@ -506,7 +506,22 @@ class CRUD(Scene):
         self.wait(2)
 
         # Animation - Change into logical view
-
+        self.play(
+            Transform(placeholder_1, Text("uwu-0").move_to(placeholder_1).scale(0.5)),
+            Transform(placeholder_2, Text("uwu-1").move_to(placeholder_2).scale(0.5)),
+            Transform(placeholder_3, Text("uwu-2").move_to(placeholder_3).scale(0.5)),
+            Transform(placeholder_4, Text("uwu-3").move_to(placeholder_4).scale(0.5)),
+            Transform(placeholder_5, Text("uwu-4").move_to(placeholder_5).scale(0.5)),
+        )
+        self.wait(2)
+        self.play(
+            fat_grid[5].background_rectangle.animate.set_fill(GREEN, opacity=0.4),
+            fat_grid[7].background_rectangle.animate.set_fill(GREEN, opacity=0.4),
+            fat_grid[0xe].background_rectangle.animate.set_fill(GREEN, opacity=0.4),
+            fat_grid[0xf].background_rectangle.animate.set_fill(GREEN, opacity=0.4),
+            fat_grid[0x10].background_rectangle.animate.set_fill(GREEN, opacity=0.4),
+        )
+        self.wait(2)
 
         # Animation - Write updated DirectoryTable
         parent_dirtable_arrow = Arrow(
@@ -526,6 +541,20 @@ class CRUD(Scene):
 
         self.play(FadeOut(write_text), FadeOut(parent_dirtable_arrow))
         self.wait(2)
+
+        # Animation - Checkmark & remove right side
+        checkmark = Text("✓", color=GREEN)
+        checkmark.move_to(request_label).shift(RIGHT)
+        self.play(Write(checkmark))
+        self.wait(3)
+
+        self.play(
+            FadeOut(request_table, shift=UP), 
+            FadeOut(request_label, shift=UP), 
+            FadeOut(nestedf1_scene_table, shift=UP),
+            FadeOut(checkmark, shift=UP),
+            FadeOut(new_entry_vgroup, shift=UP),
+        )
 
 
         # Animation - Last wait
