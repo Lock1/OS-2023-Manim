@@ -1,4 +1,3 @@
-from ctypes import alignment
 from manim import *
 
 # Warning: Most of the time in this manim file, im too lazy for writing proper py code for it
@@ -6,7 +5,7 @@ from manim import *
 #     so yes, these code is hot garbage
 
 
-class FAT32(Scene):
+class CRUD(Scene):
     def construct(self):
         # FileAllocationTable
         fat_grid_index = []
@@ -252,7 +251,28 @@ class FAT32(Scene):
         # Animation - EOF read
         self.play(Transform(files_label[3], Tex("End of File").scale(0.6).move_to(files_label[3])))
         self.play(FadeOut(read_text), FadeOut(cl_arrow))
+        self.wait(2)
 
+        arrow_request = Arrow(
+            start=fat_grid[0xb].get_center(),
+            end=request_label.get_center() + DOWN*0.2,
+            **file_arrow_style,
+        )
+        self.play(Create(arrow_request))
+        self.wait(1)
+        checkmark = Text("✓", color=GREEN)
+        checkmark.move_to(request_label).shift(RIGHT)
+        self.play(Write(checkmark))
+        self.wait(3)
+
+        # Animation - Remove right side
+        self.play(
+            FadeOut(arrow_request),
+            FadeOut(request_label, shift=UP),
+            FadeOut(checkmark, shift=UP),
+            FadeOut(request_table, shift=UP),
+            FadeOut(root_scene_table, shift=UP),
+        )
 
 
 
