@@ -406,6 +406,50 @@ class CRUD(Scene):
         self.wait(2)
 
 
+        # Animation - Second write
+        self.play(FadeOut(write_text))
+        origin_arrow = fat_grid[5].get_center() + RIGHT*0.4
+        self.play(iterator_arrow.animate.put_start_and_end_on(origin_arrow, fat_grid[6].get_center() + LEFT*0.5))
+        self.wait(1)
+        self.play(iterator_arrow.animate.put_start_and_end_on(origin_arrow, fat_grid[7].get_center() + LEFT*0.2))
+        self.wait(1)
+
+        self.play(Transform(placeholder, Tex("0000 0007").move_to(fat_grid[5]).scale(0.6)))
+        self.wait(1)
+        placeholder_2 = Text("?").move_to(fat_grid[7]).scale(0.6)
+        self.play(Write(placeholder_2))
+        self.wait(1)
+        write_text = Text("write_clusters(uint8buf + CLUSTER_SIZE*1, 0x07, 1);", t2c={"uint8buf": ORANGE, "*1": RED, "0x07": RED}).scale(0.3)
+        write_text.add_background_rectangle(YELLOW, stroke_width=1, stroke_opacity=1.0, buff=SMALL_BUFF)
+        write_text.background_rectangle.set_fill(BLACK, opacity=1.0)
+        write_text.move_to(iterator_arrow.get_center() + UP*0.4)
+        self.play(FadeIn(write_text))
+        self.wait(2)
+
+        # Animation - Third write
+        self.play(FadeOut(write_text))
+        origin_arrow = fat_grid[7].get_center() + DOWN*0.2
+        self.play(iterator_arrow.animate.put_start_and_end_on(origin_arrow, fat_grid[8].get_center()))
+        self.wait(1)
+        for i in range(8, 0xF):
+            self.play(iterator_arrow.animate.put_start_and_end_on(origin_arrow, fat_grid[i].get_center()))
+            self.wait(0.4)
+
+        self.play(Transform(placeholder_2, Tex("0000 000E").move_to(fat_grid[7]).scale(0.6)))
+        self.wait(1)
+        placeholder_3 = Text("?").move_to(fat_grid[0xE]).scale(0.6)
+        self.play(Write(placeholder_3))
+        self.wait(1)
+        write_text = Text("write_clusters(uint8buf + CLUSTER_SIZE*2, 0x0E, 1);", t2c={"uint8buf": ORANGE, "*2": RED, "0x0E": RED}).scale(0.3)
+        write_text.add_background_rectangle(YELLOW, stroke_width=1, stroke_opacity=1.0, buff=SMALL_BUFF)
+        write_text.background_rectangle.set_fill(BLACK, opacity=1.0)
+        write_text.move_to(iterator_arrow.get_center())
+        self.play(FadeIn(write_text))
+        self.wait(2)
+
+
+
+
         # Animation - Last wait
         self.wait(5)
 
