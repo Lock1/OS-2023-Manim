@@ -180,13 +180,38 @@ class FAT32(Scene):
         self.wait(2)
 
         # Animation - Arrow into first cluster
+        file_arrow_style = {
+            "color"        : YELLOW,
+            "stroke_width" : 3,
+            "tip_length"   : 0.2,
+        }
         first_cl_arrow = Arrow(
-            start=root_table.get_cell((5, 1)).get_center(),
+            start=root_table.get_cell((5, 1)).get_center() + LEFT*0.4 + DOWN*0.1,
             end=fat_grid[3].get_center(),
-            **folder_arrow_style,
+            **file_arrow_style,
         )
         self.play(Create(first_cl_arrow))
+        self.wait(1)
 
+        # Animation - Read cluster
+        read_text = Text("read_clusters(uint8buf + CLUSTER_SIZE*0, 0x03, 1);", t2c={"uint8buf": ORANGE}).scale(0.3)
+        read_text.add_background_rectangle(YELLOW, stroke_width=1, stroke_opacity=1.0, buff=MED_SMALL_BUFF)
+        read_text.background_rectangle.set_fill(BLACK, opacity=1.0)
+        read_text.move_to(first_cl_arrow.get_center())
+
+        file_arrow_style = {
+            "color"        : ORANGE,
+            "stroke_width" : 3,
+            "tip_length"   : 0.2,
+        }
+        buf_arrow = Arrow(
+            start=request_table.get_cell((1, 1)).get_center() + LEFT*2,
+            end=read_text.get_center() + LEFT*0.8,
+            **file_arrow_style,
+        )
+        self.play(FadeIn(read_text))
+        self.wait(1)
+        self.play(Create(buf_arrow))
 
         # Animation - Last wait
         self.wait(5)
