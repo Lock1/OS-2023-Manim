@@ -447,7 +447,85 @@ class CRUD(Scene):
         self.play(FadeIn(write_text))
         self.wait(2)
 
+        # Animation - Fourth write
+        self.play(FadeOut(write_text))
+        origin_arrow = fat_grid[0xE].get_center() + RIGHT*0.4
+        self.play(iterator_arrow.animate.put_start_and_end_on(origin_arrow, fat_grid[0xF].get_center() + LEFT*0.2))
+        self.wait(1)
 
+        self.play(Transform(placeholder_3, Tex("0000 000F").move_to(fat_grid[0xE]).scale(0.6)))
+        self.wait(1)
+        placeholder_4 = Text("?").move_to(fat_grid[0xF]).scale(0.6)
+        self.play(Write(placeholder_4))
+        self.wait(1)
+        write_text = Text("write_clusters(uint8buf + CLUSTER_SIZE*3, 0x0F, 1);", t2c={"uint8buf": ORANGE, "*3": RED, "0x0F": RED}).scale(0.3)
+        write_text.add_background_rectangle(YELLOW, stroke_width=1, stroke_opacity=1.0, buff=SMALL_BUFF)
+        write_text.background_rectangle.set_fill(BLACK, opacity=1.0)
+        write_text.move_to(iterator_arrow.get_center() + UP*0.4)
+        self.play(FadeIn(write_text))
+        self.wait(2)
+
+        # Animation - Fifth - Final write
+        self.play(FadeOut(write_text))
+        origin_arrow = fat_grid[0xF].get_center()
+        self.play(iterator_arrow.animate.put_start_and_end_on(origin_arrow, fat_grid[0x10].get_center()))
+        self.wait(1)
+
+        self.play(Transform(placeholder_4, Tex("0000 0010").move_to(fat_grid[0xF]).scale(0.6)))
+        self.wait(1)
+        placeholder_5 = Text("?").move_to(fat_grid[0x10]).scale(0.5)
+        self.play(Write(placeholder_5))
+        self.wait(1)
+        write_text = Text("write_clusters(uint8buf + CLUSTER_SIZE*4, 0x10, 1);", t2c={"uint8buf": ORANGE, "*4": RED, "0x10": RED}).scale(0.3)
+        write_text.add_background_rectangle(YELLOW, stroke_width=1, stroke_opacity=1.0, buff=SMALL_BUFF)
+        write_text.background_rectangle.set_fill(BLACK, opacity=1.0)
+        write_text.move_to(iterator_arrow.get_center())
+        self.play(FadeIn(write_text))
+        self.wait(2)
+
+
+        # Animation - Pointing into buffer_size
+        self.play(FadeOut(write_text))
+        origin_arrow = fat_grid[0x10].get_center()
+        self.play(iterator_arrow.animate.put_start_and_end_on(origin_arrow, request_table.get_cell((5, 1)).get_center() + LEFT*1.3))
+        self.wait(1)
+
+        write_text = Text("5*CLUSTER_SIZE = 10240 ≥ 9000").scale(0.3)
+        write_text.add_background_rectangle(YELLOW, stroke_width=1, stroke_opacity=1.0, buff=SMALL_BUFF)
+        write_text.background_rectangle.set_fill(BLACK, opacity=1.0)
+        write_text.move_to(iterator_arrow.get_center())
+        self.play(FadeIn(write_text))
+        self.wait(2)
+
+        self.play(FadeOut(write_text), FadeOut(iterator_arrow))
+
+        self.play(Transform(placeholder_5, Text("End of File").move_to(fat_grid[0x10]).scale(0.5)))
+        self.wait(2)
+
+        self.play(Transform(placeholder_5, Tex("0FFF FFFF").move_to(fat_grid[0x10]).scale(0.6)))
+        self.wait(2)
+
+        # Animation - Change into logical view
+
+
+        # Animation - Write updated DirectoryTable
+        parent_dirtable_arrow = Arrow(
+            start=nestedf1_table.get_cell((1, 1)).get_center(),
+            end=fat_grid[0xA].get_center(), 
+            **folder_arrow_style
+        ).scale(0.6)
+        self.play(Create(parent_dirtable_arrow))
+        self.wait(1)
+
+        write_text = Text("write_clusters(driver.temp_dirtable, 0x0A, 1);").scale(0.3)
+        write_text.add_background_rectangle(RED, stroke_width=1, stroke_opacity=1.0, buff=SMALL_BUFF)
+        write_text.background_rectangle.set_fill(BLACK, opacity=1.0)
+        write_text.move_to(parent_dirtable_arrow.get_center())
+        self.play(FadeIn(write_text))
+        self.wait(2)
+
+        self.play(FadeOut(write_text), FadeOut(parent_dirtable_arrow))
+        self.wait(2)
 
 
         # Animation - Last wait
