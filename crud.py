@@ -359,6 +359,8 @@ class CRUD(Scene):
         self.play(FadeOut(parent_dirtable_arrow), FadeOut(parent_cl_arrow))
         self.wait(2)
 
+
+        # Animation - Creating new entry in dirtable
         new_entry = [
             Rectangle(WHITE, height=1.35, width=3.45),
             Rectangle(WHITE, height=1.35, width=3.93),
@@ -372,6 +374,20 @@ class CRUD(Scene):
         new_entry_vgroup.scale(0.34)
         new_entry_label = [Text(txt).move_to(new_entry[i]) for i, txt in enumerate(["?", "uwu", "9000"])]
         self.play(FadeIn(new_entry_vgroup, shift=LEFT), *[FadeIn(label.scale(0.34), shift=LEFT) for label in new_entry_label])
+
+
+        # Animation - Iterating 
+        origin_arrow = new_entry[0].get_center() + LEFT*0.5
+        iterator_arrow = Arrow(
+            start=origin_arrow,
+            end=fat_grid[0].get_center(),
+            **file_arrow_style,
+        )
+        self.play(Create(iterator_arrow))
+        self.wait(1)
+        for i in range(1, 6):
+            self.play(iterator_arrow.animate.put_start_and_end_on(origin_arrow, fat_grid[i].get_center()))
+            self.wait(1)
 
 
         # Animation - Last wait
