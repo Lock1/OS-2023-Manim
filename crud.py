@@ -212,11 +212,11 @@ class FAT32(Scene):
         self.wait(1)
         self.play(Create(buf_arrow))
         self.wait(2)
-
-        # Animation - Reading next pointer
         self.play(FadeOut(buf_arrow))
         self.wait(1)
-        self.play(Transform(files_label[0], Tex("0000 0006").scale(0.5).move_to(files_label[0])))
+
+        # Animation - Reading second pointer
+        self.play(Transform(files_label[0], Tex("0000 0006").scale(0.6).move_to(files_label[0])))
         self.play(FadeOut(read_text), FadeOut(first_cl_arrow))
         self.wait(1)
         cl_arrow = Arrow(
@@ -225,6 +225,36 @@ class FAT32(Scene):
             **file_arrow_style,
         )
         self.play(Create(cl_arrow))
+        read_text = Text("read_clusters(uint8buf + CLUSTER_SIZE*1, 0x06, 1);", t2c={"uint8buf": ORANGE, "*1": RED, "0x06": RED}).scale(0.3)
+        read_text.add_background_rectangle(YELLOW, stroke_width=1, stroke_opacity=1.0, buff=SMALL_BUFF)
+        read_text.background_rectangle.set_fill(BLACK, opacity=1.0)
+        read_text.move_to(cl_arrow.get_center())
+        self.play(FadeIn(read_text))
+        self.wait(2)
+
+        # Animation - Reading third pointer
+        self.play(Transform(files_label[1], Tex("0000 000B").scale(0.6).move_to(files_label[1])))
+        self.play(FadeOut(read_text), FadeOut(cl_arrow))
+        self.wait(1)
+        cl_arrow = Arrow(
+            start=fat_grid[6].get_center(),
+            end=fat_grid[0xB].get_center(),
+            **file_arrow_style,
+        )
+        self.play(Create(cl_arrow))
+        read_text = Text("read_clusters(uint8buf + CLUSTER_SIZE*2, 0x0B, 1);", t2c={"uint8buf": ORANGE, "*2": RED, "0x0B": RED}).scale(0.3)
+        read_text.add_background_rectangle(YELLOW, stroke_width=1, stroke_opacity=1.0, buff=SMALL_BUFF)
+        read_text.background_rectangle.set_fill(BLACK, opacity=1.0)
+        read_text.move_to(cl_arrow.get_center())
+        self.play(FadeIn(read_text))
+        self.wait(2)
+
+        # Animation - EOF read
+        self.play(Transform(files_label[3], Tex("End of File").scale(0.6).move_to(files_label[3])))
+        self.play(FadeOut(read_text), FadeOut(cl_arrow))
+
+
+
 
 
         # Animation - Last wait
