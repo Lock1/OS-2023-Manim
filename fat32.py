@@ -44,8 +44,8 @@ class FAT32(Scene):
 
 
         # Animation - SB #2 - Reserved clusters value
-        fat_cl0_label = Text("CLUSTER_0_VALUE").scale(0.25).move_to(fat_grid[0])
-        fat_cl1_label = Text("CLUSTER_1_VALUE").scale(0.25).move_to(fat_grid[1])
+        fat_cl0_label = Text("CLUSTER_0_VALUE").scale(0.28).move_to(fat_grid[0])
+        fat_cl1_label = Text("CLUSTER_1_VALUE").scale(0.28).move_to(fat_grid[1])
         fat_grid[0].add(fat_cl0_label)
         fat_grid[1].add(fat_cl1_label)
         self.play(FadeIn(fat_cl0_label), FadeIn(fat_cl1_label))
@@ -135,7 +135,7 @@ class FAT32(Scene):
         # .add_background_rectangle(opacity=0.5,buff=0.1)
         physical_file_label = [
             Tex("0x0000 0006").move_to(files_label[0]).scale(0.6),
-            Tex("0x0000 000b").move_to(files_label[1]).scale(0.6),
+            Tex("0x0000 000B").move_to(files_label[1]).scale(0.6),
             Tex("End of File").move_to(files_label[3]).scale(0.6),
         ]
         self.play(Transform(files_label[0], physical_file_label[0]))
@@ -209,10 +209,10 @@ class FAT32(Scene):
             ["0x3", "kano", "file"],
             ["0x15", "nbuna", "file"],
         ]
-        root_label = [Text(text) for text in ["Cluster", "Name", "Attribute"]]
+        root_table_label = [Text(text) for text in ["Cluster", "Name", "Attribute"]]
         root_table = Table(
             root_dirtable, 
-            col_labels=root_label,
+            col_labels=root_table_label,
             include_outer_lines=True
         ).scale(0.4).set_row_colors(BLACK)
         root_table.add_to_back(root_table.get_highlighted_cell((1, 1), color=GOLD_A))
@@ -249,6 +249,7 @@ class FAT32(Scene):
         self.play(*[FadeIn(legend, shift=UP) for legend in fat_legend], FadeOut(root_scene_table, shift=UP))
         self.wait(1)
 
+        # FIXME : Theres some, wacky transition for transforms for SB "Physical View"
         # Animation - Physical view
         self.play(Transform(fat_grid_label, Tex("FileAllocationTable - Physical View").move_to(fat_grid_label)))
         self.wait(1)
@@ -256,7 +257,6 @@ class FAT32(Scene):
             Transform(fat_cl0_label, Tex("0FFF FFF0").move_to(fat_cl0_label).scale(0.6)),
             Transform(fat_cl1_label, Tex("0FFF FFFF").move_to(fat_cl1_label).scale(0.6)),
         )
-        # FIXME : Theres some problem with above transformation
 
         self.wait(2)
         self.play(
@@ -269,10 +269,55 @@ class FAT32(Scene):
             Transform(files_label[6], Tex("End of File").move_to(files_label[6]).scale(0.6)),
             Transform(files_label[7], Tex("End of File").move_to(files_label[7]).scale(0.6)),
         )
+        
+        self.wait(2)
+        self.play(
+            Transform(files_label[3], Tex("0FFF FFFF").move_to(files_label[3]).scale(0.6)),
+            Transform(files_label[5], Tex("0FFF FFFF").move_to(files_label[5]).scale(0.6)),
+            Transform(files_label[6], Tex("0FFF FFFF").move_to(files_label[6]).scale(0.6)),
+            Transform(files_label[7], Tex("0FFF FFFF").move_to(files_label[7]).scale(0.6)),
+        )
 
-        # TODO : Swap EOF with actual number value
-        # TODO : Folder physical view
-        # TODO : Extra, showing how to read file
+        # Animation - Folder 
+        self.wait(2)
+        self.play(
+            Transform(root_label, Tex("End of File").move_to(root_label).scale(0.6)),
+            Transform(folder1_label, Tex("End of File").move_to(folder1_label).scale(0.6)),
+            Transform(folder2_label, Tex("End of File").move_to(folder2_label).scale(0.6)),
+            Transform(nested1_label, Tex("End of File").move_to(nested1_label).scale(0.6)),
+        )
 
+        self.wait(2)
+        self.play(
+            Transform(root_label, Tex("0FFF FFFF").move_to(root_label).scale(0.6)),
+            Transform(folder1_label, Tex("0FFF FFFF").move_to(folder1_label).scale(0.6)),
+            Transform(folder2_label, Tex("0FFF FFFF").move_to(folder2_label).scale(0.6)),
+            Transform(nested1_label, Tex("0FFF FFFF").move_to(nested1_label).scale(0.6)),
+        )
+
+        # Animation - Empty spaces
+        self.wait(2)
+        empty_spaces = [
+            0x05,
+            0x07,
+            0x0E,
+            0x0F,
+            0x10,
+            0x11,
+            0x13,
+            0x14,
+            0x16,
+            0x17,
+        ]
+        empty_label = [Text("Empty").scale(0.5).move_to(fat_grid[i]) for i in empty_spaces]
+        self.play(*[FadeIn(label) for label in empty_label])
+
+        self.wait(2)
+        self.play(*[Transform(label, Tex("0000 0000").move_to(label.get_center()).scale(0.6)) for label in empty_label])
+
+        # Animation - Last wait
         self.wait(5)
+
+        # Animation - Destroy everything
+        self.play(*[FadeOut(obj) for obj in self.mobjects])
 
