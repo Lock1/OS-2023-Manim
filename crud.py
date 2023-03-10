@@ -374,6 +374,7 @@ class CRUD(Scene):
         new_entry_vgroup.scale(0.34)
         new_entry_label = [Text(txt).move_to(new_entry[i]) for i, txt in enumerate(["?", "uwu", "9000"])]
         self.play(FadeIn(new_entry_vgroup, shift=LEFT), *[FadeIn(label.scale(0.34), shift=LEFT) for label in new_entry_label])
+        self.wait(2)
 
 
         # Animation - Iterating 
@@ -386,8 +387,23 @@ class CRUD(Scene):
         self.play(Create(iterator_arrow))
         self.wait(1)
         for i in range(1, 6):
-            self.play(iterator_arrow.animate.put_start_and_end_on(origin_arrow, fat_grid[i].get_center()))
+            self.play(iterator_arrow.animate.put_start_and_end_on(origin_arrow, fat_grid[i].get_center() + RIGHT*0.2 + DOWN*0.2))
             self.wait(1)
+
+        # Animation - Write & placeholder
+        placeholder = Tex("?").scale(0.6)
+        placeholder.move_to(fat_grid[5].get_center())
+        self.play(Write(placeholder))
+        self.wait(2)
+        self.play(Transform(new_entry_label[0], Text("0x5").move_to(new_entry[0]).scale(0.34)))
+        self.wait(2)
+        
+        write_text = Text("write_clusters(uint8buf + CLUSTER_SIZE*0, 0x05, 1);", t2c={"uint8buf": ORANGE}).scale(0.3)
+        write_text.add_background_rectangle(YELLOW, stroke_width=1, stroke_opacity=1.0, buff=SMALL_BUFF)
+        write_text.background_rectangle.set_fill(BLACK, opacity=1.0)
+        write_text.move_to(iterator_arrow.get_center())
+        self.play(FadeIn(write_text))
+        self.wait(2)
 
 
         # Animation - Last wait
