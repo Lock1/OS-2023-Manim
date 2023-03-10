@@ -76,10 +76,46 @@ class FAT32(Scene):
         ]
         request_table = Table(driver_request, include_outer_lines=True, arrange_in_grid_config={"cell_alignment": LEFT}).scale(0.4)
         request_table.move_to(request_label)
-        request_table.shift(DOWN*2)
+        request_table.shift(DOWN*1.9)
         self.play(FadeIn(request_label, shift=UP), FadeIn(request_table, shift=UP))
+        self.wait(2)
 
-        
+        folder_arrow_style = {
+            "color"        : RED,
+            "stroke_width" : 3,
+            "tip_length"   : 0.2,
+        }
+        parent_cl_arrow = Arrow(
+            start=request_table.get_cell((4, 1)).get_center() + LEFT*1.3, 
+            end=fat_grid[2].get_center(), **folder_arrow_style
+        ).scale(0.8)
+        self.play(Create(parent_cl_arrow))
+        self.wait(1)
+
+        # Animation - Show root DirectoryTable
+        root_dirtable = [
+            ["0x2", "root", "special"],
+            ["0x4", "folder1", "subdir"],
+            ["0x8", "folder2", "subdir"],
+            ["0x3", "kano", "file"],
+            ["0x15", "nbuna", "file"],
+        ]
+        root_table_label = [Text(text) for text in ["Cluster", "Name", "Attribute"]]
+        root_table = Table(
+            root_dirtable, 
+            col_labels=root_table_label,
+            include_outer_lines=True
+        ).scale(0.325).set_row_colors(BLACK)
+        root_table.add_to_back(root_table.get_highlighted_cell((1, 1), color=GOLD_A))
+        root_table.add_to_back(root_table.get_highlighted_cell((1, 2), color=GOLD_A))
+        root_table.add_to_back(root_table.get_highlighted_cell((1, 3), color=GOLD_A))
+
+        root_dir_label   = Tex("DirectoryTable - Root (cluster 0x02)").scale(0.5)
+        root_scene_table = VGroup(root_dir_label, root_table).arrange(DOWN)
+        root_scene_table.move_to(request_table).shift(DOWN*3.25)
+
+        self.play(FadeIn(root_scene_table, shift=UP))
+        self.wait(2)
 
 
         # Animation - Last wait
