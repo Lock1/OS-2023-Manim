@@ -94,13 +94,13 @@ class FAT32(Scene):
 
         # Animation - Show root DirectoryTable
         root_dirtable = [
-            ["0x2", "root", "special"],
-            ["0x4", "folder1", "subdir"],
-            ["0x8", "folder2", "subdir"],
-            ["0x3", "kano", "file"],
-            ["0x15", "nbuna", "file"],
+            ["0x2", "root", "0"],
+            ["0x4", "folder1", "0"],
+            ["0x8", "folder2", "0"],
+            ["0x3", "kano", "5123"],
+            ["0x15", "nbuna", "1337"],
         ]
-        root_table_label = [Text(text) for text in ["Cluster", "Name", "Attribute"]]
+        root_table_label = [Text(text) for text in ["Cluster", "Name", "Filesize"]]
         root_table = Table(
             root_dirtable, 
             col_labels=root_table_label,
@@ -114,7 +114,15 @@ class FAT32(Scene):
         root_scene_table = VGroup(root_dir_label, root_table).arrange(DOWN)
         root_scene_table.move_to(request_table).shift(DOWN*3.25)
 
-        self.play(FadeIn(root_scene_table, shift=UP))
+        # Arrow first
+        parent_dirtable_arrow = Arrow(
+            start=fat_grid[2].get_center(),
+            end=root_table.get_cell((1, 1)).get_center(), **folder_arrow_style
+        ).scale(0.6)
+        self.play(Create(parent_dirtable_arrow))
+        self.wait(1)
+
+        self.play(FadeIn(root_scene_table))
         self.wait(2)
 
 
