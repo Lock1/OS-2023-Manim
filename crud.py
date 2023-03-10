@@ -105,13 +105,13 @@ class FAT32(Scene):
             root_dirtable, 
             col_labels=root_table_label,
             include_outer_lines=True
-        ).scale(0.325).set_row_colors(BLACK)
+        ).scale(0.34).set_row_colors(BLACK)
         root_table.add_to_back(root_table.get_highlighted_cell((1, 1), color=GOLD_A))
         root_table.add_to_back(root_table.get_highlighted_cell((1, 2), color=GOLD_A))
         root_table.add_to_back(root_table.get_highlighted_cell((1, 3), color=GOLD_A))
 
         root_dir_label   = Tex("DirectoryTable - Root (cluster 0x02)").scale(0.5)
-        root_scene_table = VGroup(root_dir_label, root_table).arrange(DOWN)
+        root_scene_table = VGroup(root_dir_label, root_table).arrange(DOWN, buff=SMALL_BUFF)
         root_scene_table.move_to(request_table).shift(DOWN*3.25)
 
         # Arrow first
@@ -122,8 +122,70 @@ class FAT32(Scene):
         self.play(Create(parent_dirtable_arrow))
         self.wait(1)
 
-        self.play(FadeIn(root_scene_table))
+        self.play(FadeIn(root_scene_table, shift=UP))
         self.wait(2)
+
+        # Animation - Surrounding rectangle for iteration
+        sr_iterator = SurroundingRectangle(root_table.get_rows()[1])
+        sr_iterator.generate_target()
+        self.play(FadeOut(parent_dirtable_arrow), FadeOut(parent_cl_arrow))
+        self.play(Create(sr_iterator))
+        self.wait(2)
+
+        sr_iterator.target.move_to(root_table.get_rows()[2])
+        self.play(MoveToTarget(sr_iterator))
+        self.wait(1)
+
+        sr_iterator.target.move_to(root_table.get_rows()[3])
+        self.play(MoveToTarget(sr_iterator))
+        self.wait(1)
+        
+        sr_iterator.target.move_to(root_table.get_rows()[4])
+        self.play(MoveToTarget(sr_iterator))
+        self.wait(1)
+
+        # Animation - Highlight name and remove iterator
+        highlight_name         = root_table.get_highlighted_cell((5, 2), color=GREEN)
+        highlight_request_name = request_table.get_highlighted_cell((2, 1), color=GREEN)
+        highlight_request_ext  = request_table.get_highlighted_cell((3, 1), color=GREEN)
+        self.play(
+            FadeIn(highlight_name), 
+            FadeIn(highlight_request_name), 
+            FadeIn(highlight_request_ext), 
+            FadeOut(sr_iterator),
+        )
+        self.wait(2)
+
+
+        # Animation - Highlight file size & buffer
+        self.play(
+            FadeOut(highlight_name), 
+            FadeOut(highlight_request_name), 
+            FadeOut(highlight_request_ext),
+        )
+        highlight_filesize         = root_table.get_highlighted_cell((5, 3), color=GREEN)
+        highlight_request_buf_size = request_table.get_highlighted_cell((5, 1), color=GREEN)
+        
+        self.wait(1)
+        self.play(
+            FadeIn(highlight_filesize),
+            FadeIn(highlight_request_buf_size),
+        )
+        self.wait(2)
+
+        self.play(
+            FadeOut(highlight_filesize),
+            FadeOut(highlight_request_buf_size),
+        )
+        self.wait(2)
+
+        # Animation - Arrow into first cluster
+        first_cl_arrow = Arrow(
+            start=root_table.get_cell((5, 1)).get_center(),
+            end=fat_grid[3].get_center(),
+            **folder_arrow_style,
+        )
+        self.play(Create(first_cl_arrow))
 
 
         # Animation - Last wait
