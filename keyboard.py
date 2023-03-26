@@ -57,9 +57,7 @@ class Keyboard(Scene):
 
         keyboard_state_box.generate_target()
         keyboard_state_box.target.set_fill(GREEN, opacity=0.6)
-        self.play(MoveToTarget(keyboard_state_box))
-        self.wait(0.5)
-        self.play(Flash(keyboard_state_box, runtime=1, line_length=2))
+        self.play(MoveToTarget(keyboard_state_box), Flash(keyboard_state_box, runtime=1, flash_radius=0.7, line_length=2))
         self.wait(2)
 
         # Looping
@@ -102,17 +100,29 @@ class Keyboard(Scene):
         )
         self.wait(2)
 
-
-        ret_breakpoint_highlighter  = Rectangle(width=5.5, height=0.41, color=RED)
-        breakpoint_arr = Arrow(
+        breakpoint_arr             = Arrow(
             start=ins_breakpoint_highlighter.get_center(), 
-            end=ins_breakpoint_highlighter.get_center(), 
+            end=interrupt_code.get_center() + UP*0.85, 
             **file_arrow_style
         )
+        self.play(Create(breakpoint_arr))
+        self.wait(2)
         ins_breakpoint_highlighter.target.move_to(interrupt_code.get_center() + UP*0.85).stretch_to_fit_width(8)
         self.bring_to_front(ins_breakpoint_highlighter)
-        self.play(MoveToTarget(ins_breakpoint_highlighter))
+        ret_breakpoint_highlighter = Rectangle(width=5.5, height=0.41).set_stroke(width=0).set_fill(RED, opacity=0.3)
+        ret_breakpoint_highlighter.move_to(ins_breakpoint_highlighter.get_center())
+        self.play(FadeIn(ret_breakpoint_highlighter), MoveToTarget(ins_breakpoint_highlighter))
+        self.wait(2)
 
+        # SB #5 - Step-in and closure
+        for _ in range(3):
+            ins_breakpoint_highlighter.target.move_to(ins_breakpoint_highlighter.get_center() + DOWN*0.27)
+            self.play(MoveToTarget(ins_breakpoint_highlighter))
+            self.wait(0.5)
+        
 
         # End animation
         self.wait(5)
+
+        # Animation - Destroy everything
+        self.play(*[FadeOut(obj) for obj in self.mobjects])
