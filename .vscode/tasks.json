@@ -4,7 +4,7 @@
         {
             "type": "shell",
             "label": "Run manim",
-            "command": "manim -pqh keyboard.py"
+            "command": "manim -pql keyboard.py"
         }
     ],
 }
