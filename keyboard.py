@@ -57,7 +57,7 @@ class Keyboard(Scene):
 
         keyboard_state_box.generate_target()
         keyboard_state_box.target.set_fill(GREEN, opacity=0.6)
-        self.play(MoveToTarget(keyboard_state_box), Flash(keyboard_state_box, runtime=1, flash_radius=0.7, line_length=2))
+        self.play(MoveToTarget(keyboard_state_box), Flash(keyboard_state_box, runtime=1, flash_radius=0.7, line_length=0.7))
         self.wait(2)
 
         # Looping
@@ -111,15 +111,52 @@ class Keyboard(Scene):
         self.bring_to_front(ins_breakpoint_highlighter)
         ret_breakpoint_highlighter = Rectangle(width=5.5, height=0.41).set_stroke(width=0).set_fill(RED, opacity=0.3)
         ret_breakpoint_highlighter.move_to(ins_breakpoint_highlighter.get_center())
-        self.play(FadeIn(ret_breakpoint_highlighter), MoveToTarget(ins_breakpoint_highlighter))
+        self.play(FadeOut(breakpoint_arr), FadeIn(ret_breakpoint_highlighter), MoveToTarget(ins_breakpoint_highlighter))
         self.wait(2)
 
         # SB #5 - Step-in and closure
         for _ in range(3):
-            ins_breakpoint_highlighter.target.move_to(ins_breakpoint_highlighter.get_center() + DOWN*0.27)
+            ins_breakpoint_highlighter.target.move_to(ins_breakpoint_highlighter.get_center() + DOWN*0.28)
             self.play(MoveToTarget(ins_breakpoint_highlighter))
             self.wait(0.5)
         
+        self.wait(1)
+        
+        sample_type = ImageMobject("img/border-qemu.jpg").to_corner(UP + RIGHT)
+        type_arr    = Arrow(
+            start=ins_breakpoint_highlighter.get_center(), 
+            end=sample_type.get_center() + LEFT*2.2 + DOWN*1.2, 
+            **file_arrow_style
+        )
+        self.play(FadeIn(sample_type), Create(type_arr))
+        self.wait(2)
+
+        self.play(FadeOut(sample_type), FadeOut(type_arr))
+        self.wait(1)
+
+        # PIC ACK
+        ack_label = Text("pic_ack()", font_size=24).move_to(interrupt_arr.get_center() + RIGHT).move_to(arr_label.get_center())
+        self.play(interrupt_arr.animate.put_start_and_end_on(
+            start=cpu_img.get_center() + DOWN*0.9, 
+            end=keyboard_svg.get_center() + UP*0.7, 
+        ), Transform(arr_label, ack_label))
+        self.wait(2)
+        self.play(FadeOut(arr_label), FadeOut(interrupt_arr))
+        self.wait(2)
+            
+        # Step into end
+        for _ in range(3):
+            ins_breakpoint_highlighter.target.move_to(ins_breakpoint_highlighter.get_center() + DOWN*0.28)
+            self.play(MoveToTarget(ins_breakpoint_highlighter))
+            self.wait(0.5)
+        
+        breakpoint_arr = Arrow(
+            start=ins_breakpoint_highlighter.get_center(), 
+            end=ret_breakpoint_highlighter.get_center(), 
+            **file_arrow_style
+        )
+        self.play(Create(breakpoint_arr))
+        self.wait(2)
 
         # End animation
         self.wait(5)
