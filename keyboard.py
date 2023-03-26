@@ -18,7 +18,7 @@ class Keyboard(Scene):
         keyboard_svg.scale(0.5)
         keyboard_state_box = Rectangle(width=0.6, height=0.6).set_fill(RED, opacity=0.6).set_stroke(width=0.6)
         keyboard_group     = VGroup(keyboard_state_box, keyboard_svg).arrange(RIGHT).to_corner(RIGHT + DOWN)
-        kernel_code         = Code("kb_kernel_sample.c", line_spacing=0.7, language="c")
+        kernel_code        = Code("kb_kernel_sample.c", line_spacing=0.7, language="c")
         kernel_code.scale(0.7).to_corner(LEFT)
         cpu_img            = ImageMobject("img/crop_cpu.png")
         cpu_img.scale(0.5).move_to(keyboard_svg.get_center() + 3*UP)
@@ -157,6 +157,22 @@ class Keyboard(Scene):
         )
         self.play(Create(breakpoint_arr))
         self.wait(2)
+
+        ins_breakpoint_highlighter.target.move_to(ret_breakpoint_highlighter.get_center())
+        ins_breakpoint_highlighter.target.stretch_to_fit_width(width=5.5)
+        self.play(MoveToTarget(ins_breakpoint_highlighter), FadeOut(ret_breakpoint_highlighter), FadeOut(breakpoint_arr))
+        self.wait(2)
+
+
+        # Final move
+        for _ in range(2):
+            ins_breakpoint_highlighter.target.move_to(ins_breakpoint_highlighter.get_center() + DOWN*0.3)
+            self.play(MoveToTarget(ins_breakpoint_highlighter))
+            self.wait(0.2)
+            ins_breakpoint_highlighter.target.move_to(ins_breakpoint_highlighter.get_center() + UP*0.3)
+            self.play(MoveToTarget(ins_breakpoint_highlighter))
+            self.wait(0.2)
+
 
         # End animation
         self.wait(5)
