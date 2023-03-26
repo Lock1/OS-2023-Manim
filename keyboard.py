@@ -31,22 +31,22 @@ class Keyboard(Scene):
         self.wait(2)
 
         # SB #2 - Step-in busy wait
-        # ins_arr                     = Arrow(
-        #     start=cpu_img.get_center() + LEFT*0.5, 
-        #     end=kernel_code.get_center() + RIGHT*2.5 + UP*1.25, 
-        #     **file_arrow_style
-        # )
-        # ins_breakpoint_highlighter  = Rectangle(width=5.5, height=0.41, color=YELLOW)
+        ins_arr                     = Arrow(
+            start=cpu_img.get_center() + LEFT*0.5, 
+            end=kernel_code.get_center() + RIGHT*2.5 + UP*1.25, 
+            **file_arrow_style
+        )
+        ins_breakpoint_highlighter  = Rectangle(width=5.5, height=0.41, color=YELLOW)
         # self.play(Create(ins_arr))
         # self.wait(2)
-        # ins_breakpoint_highlighter.move_to(ins_arr.get_end() + LEFT*2.8)
-        # self.play(Create(ins_breakpoint_highlighter))
+        ins_breakpoint_highlighter.move_to(ins_arr.get_end() + LEFT*2.8)
+        self.play(Create(ins_breakpoint_highlighter))
         # self.wait(1)
         # self.play(FadeOut(ins_arr))
         # self.wait(1)
-        # ins_breakpoint_highlighter.generate_target()
-        # ins_breakpoint_highlighter.target.set_fill(YELLOW, opacity=0.3).set_stroke(opacity=0)
-        # self.play(MoveToTarget(ins_breakpoint_highlighter))
+        ins_breakpoint_highlighter.generate_target()
+        ins_breakpoint_highlighter.target.set_fill(YELLOW, opacity=0.3).set_stroke(opacity=0)
+        self.play(MoveToTarget(ins_breakpoint_highlighter))
         # self.wait(2)
 
         # # Step in until keyboard_state_activate()
@@ -86,10 +86,16 @@ class Keyboard(Scene):
 
         kernel_instruction.generate_target()
         kernel_instruction.target.to_corner(LEFT + UP)
-        interrupt_code  = Code("kb_int.c", line_spacing=0.7, language="c").scale(0.6)
+        interrupt_code  = Code("kb_int.c", line_spacing=0.7, language="c").scale(0.65)
         interrupt_label = Tex("Interrupt Handler")
         interrupt_group = VGroup(interrupt_label, interrupt_code).arrange(DOWN).to_corner(LEFT + DOWN)
-        self.play(FadeIn(interrupt_group, shift=UP), MoveToTarget(kernel_instruction))
+        ins_breakpoint_highlighter.target.move_to(kernel_instruction.target.get_center() + UP*0.7)
+        self.play(FadeIn(interrupt_group, shift=UP), MoveToTarget(kernel_instruction), MoveToTarget(ins_breakpoint_highlighter))
+        self.wait(2)
+
+        ins_breakpoint_highlighter.target.move_to(interrupt_code.get_center() + UP*0.85).stretch_to_fit_width(8)
+        self.bring_to_front(ins_breakpoint_highlighter)
+        self.play(MoveToTarget(ins_breakpoint_highlighter))
 
 
         # End animation
