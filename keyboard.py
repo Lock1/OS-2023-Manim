@@ -15,7 +15,9 @@ class Keyboard(Scene):
         
         # SB #1 - Initial setup
         keyboard_svg       = SVGMobject("img/basic_kb")
-        keyboard_svg.scale(0.5).to_corner(RIGHT + DOWN)
+        keyboard_svg.scale(0.5)
+        keyboard_state_box = Rectangle(width=0.6, height=0.6).set_fill(RED, opacity=0.6).set_stroke(width=0.6)
+        keyboard_group     = VGroup(keyboard_state_box, keyboard_svg).arrange(RIGHT).to_corner(RIGHT + DOWN)
         kernelcode         = Code("kb_kernel_sample.c", line_spacing=0.7, language="c")
         kernelcode.scale(0.7).to_corner(LEFT)
         cpu_img            = ImageMobject("img/crop_cpu.png")
@@ -24,7 +26,7 @@ class Keyboard(Scene):
         kernel_instruction = VGroup(instruction_label, kernelcode).arrange(DOWN)
         kernel_instruction.to_corner(LEFT)
         self.add(kernel_instruction)
-        self.add(keyboard_svg)
+        self.add(keyboard_group)
         self.add(cpu_img)
         self.wait(2)
 
@@ -53,7 +55,13 @@ class Keyboard(Scene):
             self.play(MoveToTarget(ins_breakpoint_highlighter))
             self.wait(0.5)
 
-        for _ in range(3):
+        keyboard_state_box.generate_target()
+        keyboard_state_box.target.set_fill(GREEN, opacity=0.6)
+        self.play(MoveToTarget(keyboard_state_box))
+        self.wait(2)
+
+        # Looping
+        for _ in range(2):
             ins_breakpoint_highlighter.target.move_to(ins_breakpoint_highlighter.get_center() + UP*0.3)
             self.play(MoveToTarget(ins_breakpoint_highlighter))
             self.wait(0.5)
@@ -61,7 +69,7 @@ class Keyboard(Scene):
             self.play(MoveToTarget(ins_breakpoint_highlighter))
             self.wait(0.5)
 
-        
+        # SB #3 - Keyboard interrupt
 
         # SB #3 - Get interrupted
         # interruptcode = Code("kb_int.c", line_spacing=0.7, language="c")
