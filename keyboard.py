@@ -31,14 +31,22 @@ class Keyboard(Scene):
         # SB #2 - Step-in busy wait
         ins_arr                     = Arrow(
             start=cpu_img.get_center() + LEFT*0.5, 
-            end=kernelcode.get_center() + RIGHT*2.5 + UP*1.2, 
+            end=kernelcode.get_center() + RIGHT*2.5 + UP*1.25, 
             **file_arrow_style
         )
-        ins_breakpoint_highlighter  = Rectangle(color=YELLOW)
+        ins_breakpoint_highlighter  = Rectangle(width=5.5, height=0.41, color=YELLOW)
         self.play(Create(ins_arr))
-        self.wait(1)
+        self.wait(2)
+        ins_breakpoint_highlighter.move_to(ins_arr.get_end() + LEFT*2.8)
         self.play(Create(ins_breakpoint_highlighter))
-
+        self.wait(1)
+        self.play(FadeOut(ins_arr))
+        self.wait(1)
+        ins_breakpoint_highlighter.generate_target()
+        ins_breakpoint_highlighter.target.set_fill(YELLOW, opacity=0.3).set_stroke(opacity=0)
+        self.play(MoveToTarget(ins_breakpoint_highlighter))
+        self.wait(2)
+        
 
         # SB #3 - Get interrupted
         # interruptcode = Code("kb_int.c", line_spacing=0.7, language="c")
