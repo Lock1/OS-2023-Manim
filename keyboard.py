@@ -46,6 +46,21 @@ class Keyboard(Scene):
         ins_breakpoint_highlighter.target.set_fill(YELLOW, opacity=0.3).set_stroke(opacity=0)
         self.play(MoveToTarget(ins_breakpoint_highlighter))
         self.wait(2)
+
+        # Step in until keyboard_state_activate()
+        for _ in range(7):
+            ins_breakpoint_highlighter.target.move_to(ins_breakpoint_highlighter.get_center() + DOWN*0.3)
+            self.play(MoveToTarget(ins_breakpoint_highlighter))
+            self.wait(0.5)
+
+        for _ in range(3):
+            ins_breakpoint_highlighter.target.move_to(ins_breakpoint_highlighter.get_center() + UP*0.3)
+            self.play(MoveToTarget(ins_breakpoint_highlighter))
+            self.wait(0.5)
+            ins_breakpoint_highlighter.target.move_to(ins_breakpoint_highlighter.get_center() + DOWN*0.3)
+            self.play(MoveToTarget(ins_breakpoint_highlighter))
+            self.wait(0.5)
+
         
 
         # SB #3 - Get interrupted
